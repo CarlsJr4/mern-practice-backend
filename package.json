@@ -19,6 +19,7 @@
   "homepage": "https://github.com/CarlsJr4/mern-practice-backend#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongodb": "^3.5.5",
     "mongoose": "^5.9.7"
   }
 }
