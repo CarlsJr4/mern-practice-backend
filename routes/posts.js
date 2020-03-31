@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const posts = require('../models/posts');
+const _ = require('lodash');
 
 router.get('/', async (req, res) => {
 	const allPosts = await posts.find();
@@ -16,12 +17,8 @@ router.get('/:postId', async (req, res) => {
 
 // In a post request, we need validation
 router.post('/', async (req, res) => {
-	const newPost = new posts({
-		title: req.body.title,
-		author: req.body.author,
-		body: req.body.body
-	});
-	newPost.save();
+	const newPost = new posts(_.pick(req.body, ['title', 'author', 'body']));
+	await newPost.save();
 	res.send(newPost);
 });
 
