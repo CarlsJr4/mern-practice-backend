@@ -19,13 +19,16 @@ mongoose.connect('mongodb://127.0.0.1:27017/socialmedia', { useNewUrlParser: tru
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log('Connected to mongoDB'));
 
+// Routes
 const posts = require('./routes/posts');
+const users = require('./routes/users')
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/api/posts', posts);
+app.use('/api/users', users);
 
 // Etc
 app.get('/', (req, res) => res.send('Welcome to a placeholder social media site!'));
