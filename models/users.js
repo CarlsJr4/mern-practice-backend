@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Current task: Send a json web token to the user upon loading
+
 const userSchema = new Schema({
 	username: {
 		type: String,
