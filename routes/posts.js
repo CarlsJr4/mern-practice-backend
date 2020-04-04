@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const posts = require('../models/posts');
 const _ = require('lodash');
+const auth = require('../middleware/auth');
 
 // New tasks: 
 // Authentication middleware (After login is successfully implemented)
@@ -12,7 +13,7 @@ const _ = require('lodash');
 
 // Default route
 // Should implement a try/catch block here
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
 	try {
 		const allPosts = await posts.find();
 		res.send(allPosts);
@@ -23,7 +24,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create new post
-router.post('/', async (req, res, next) => {
+router.post('/', auth, async (req, res, next) => {
 	try {
 		const newPost = new posts(_.pick(req.body, ['title', 'author', 'body']));
 		await newPost.save();
@@ -36,7 +37,7 @@ router.post('/', async (req, res, next) => {
 
 // Delete a post
 // How to make it so that you can only delete your own posts?
-router.delete('/:postId', async (req, res) => {
+router.delete('/:postId', auth, async (req, res) => {
 	let post;
 	try {
 		const post = await posts.findByIdAndDelete(req.params.postId);

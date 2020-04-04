@@ -14,27 +14,34 @@ router.post('/register', async (req, res) => {
 		await newUser.save();
 		const token = await jwt.sign({ id: newUser._id}, config.placeholderKey);
 		// Access token sent to client. Client saves to localStorage. Then, server must check for the token? 
-		res.set('X-access-token', token).send(newUser);
+		res.set('X-access-token', token).send({newUser, token});
 	}
 	catch (ex) {
 		res.send(ex);
 	}
 });
 
-// Goal for login: determine if the user exists, compare hashed password, then send JWT
+// Also another goal: authentication middleware that prevents you from accessing the blog posts without a JWT
 router.post('/login', async (req, res) => {
+	// We get an error that says we can't set headers after sending
 	try {
 		// Check if user exists
 		const user = await users.findOne({ email: req.body.email });
-		if (!user) res.status(404).send('User with specified email was not found.');
-
-		// Compared hashed password
-		const authenticated = await bcrypt.compare(req.body.password, user.password);
-		if (!authenticated) res.status(400).send('Username or password was incorrect');
+		if (!user) return res.status(404).send('User with specified email was not found.');
+		
+		// Nested try catch block to prevent users from submitting blank passwords
+		// Should we use Joi validation here?
+		try {
+			const authenticated = await bcrypt.compare(req.body.password, user.password);
+			if (!authenticated) return res.status(400).send('Username or password was incorrect');
+		} 
+		catch (ex) {
+			return res.status(400).send('Username or password was incorrect.');
+		}
 
 		// Send JWT
 		const token = await jwt.sign({ id: user._id}, config.placeholderKey);
-		res.set('X-access-token', token).send(user);
+		res.set('X-access-token', token).send({user, token});
 	}
 	catch (ex) {
 		res.send(ex)
