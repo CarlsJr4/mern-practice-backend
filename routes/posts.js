@@ -3,21 +3,22 @@ const router = express.Router();
 const posts = require('../models/posts');
 const _ = require('lodash');
 
-// Default route
-router.get('/', async (req, res) => {
-	const allPosts = await posts.find();
-	res.send(allPosts);
-});
+// New tasks: 
+// Authentication middleware (After login is successfully implemented)
+// Handle authentication errors clientside
+// Implement author subdocuments for each post 
 
-// Get post by ID
-router.get('/:postId', async (req, res) => {
-	let post
+// Next steps: Author subdocuments
+
+// Default route
+// Should implement a try/catch block here
+router.get('/', async (req, res) => {
 	try {
-		post = await posts.findById(req.params.postId);
-		res.send(post);
+		const allPosts = await posts.find();
+		res.send(allPosts);
 	}
-	catch {
-		if (!post) res.status(404).send('Could not find the specified user.');
+	catch (ex) {
+		next(ex);
 	}
 });
 
@@ -28,11 +29,13 @@ router.post('/', async (req, res, next) => {
 		await newPost.save();
 		res.send(newPost);
 	} catch (ex) {
+		res.status(400).send(ex)
 		next(ex);
 	}
 });
 
 // Delete a post
+// How to make it so that you can only delete your own posts?
 router.delete('/:postId', async (req, res) => {
 	let post;
 	try {
