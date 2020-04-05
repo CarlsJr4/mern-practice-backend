@@ -1,19 +1,23 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Next step: Add validation to your social media posts
-// Also add ability to delete posts
 const postSchema = new Schema({
 	title: { 
 		type: String,
 		required: true,
 		maxlength: 100
 	},
-	author: { 
-		type: String,
-		required: true,
-		maxlength: 25
-	},
+	// Subdocument that references authors
+	author: new Schema({
+		_id: {
+			type: mongoose.Types.ObjectId,
+			required: true
+		},
+		username: {
+			type: String,
+			required: true
+		}
+	}),
 	datePosted: {
 		type: Date,
 		default: Date.now()
